@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="TagView">
+        <attr name="tagUrl" format="string"/>
+        <attr name="tagWidth" format="integer"/>
+        <attr name="tagHeight" format="integer"/>
+        <attr name="autoRefresh" format="boolean"/>
+    </declare-styleable>
+</resources>

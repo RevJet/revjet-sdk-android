@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">RevJet SDK Sample App</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello World, Android</string>
+    <string name="load_button_title">Refresh</string>
+    <string name="fetch_button_title">Fetch</string>
+    <string name="show_button_title">Show</string>
+    <string name="interstitial">Interstitial</string>
+
+</resources>
