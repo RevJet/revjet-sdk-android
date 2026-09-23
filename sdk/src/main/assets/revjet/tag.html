@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, shrink-to-fit=no" />
+    <title></title>
+    <style>
+        * { padding: 0; margin: 0; }
+        html { height: 100%; }
+        body { height: 100%; overflow: visible; }
+        #revjet-creative { min-height: 100%; }
+    </style>
+</head>
+<body>
+    <div id="revjet-creative"></div>
+    <script type="text/javascript" src="https://{{DOMAIN}}/bg"></script>
+    <script type="text/javascript">
+    REVJET_Tag({
+        _tag: {{TAG}},
+        _key: {{KEY}},
+        {{DEBUG}}
+        _plc_id: {{PLC_ID}},
+        _opts: {
+            {{CUSTOM_DOMAIN}}
+            embd_tag_id: 'revjet-creative',
+            /* Additional options including custom options... */
+            {{OPTIONS}}
+            onload: function(tagObject) {
+                window.__revjetPost('onLoad', '{}');
+            },
+            onresize: function(tagObject) {
+                const newHeight = tagObject.getHeight();
+                window.__revjetPost('onResize', newHeight);
+            },
+            ontrackingevent: function(tagObject, properties) {
+                window.__revjetPost('onTrackingEvent', properties);
+            }
+        },
+        /* Additional custom properties (with any keys/values)... */
+        {{CUSTOM_PARAMETERS}}
+    });
+    </script>
+</body>
+</html>

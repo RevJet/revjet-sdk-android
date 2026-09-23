@@ -1,13 +1,12 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-          package="com.revjet.android.sdk"
->
+    <uses-permission android:name="android.permission.INTERNET" />
 
-    <application android:allowBackup="true"
-                 android:label="@string/app_name"
-                 android:supportsRtl="true"
-    >
+    <!-- `reloadsOnReachable` watches for the network coming back -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    </application>
+    <!-- Without it the advertising ID reads as zeros on API 33 and above -->
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
 
 </manifest>

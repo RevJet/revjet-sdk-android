@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+      The platform blocks cleartext by default since API 28, which would stop a loopback request
+      before the SDK's own destination policy could refuse it. Allowing it here makes the security
+      tests prove the SDK's control rather than the platform's.
+    -->
+    <application android:usesCleartextTraffic="true">
+        <!-- No action bar, so that only what a test adds can cover the ad -->
+        <activity
+            android:name="com.revjet.sdk.TestHostActivity"
+            android:exported="true"
+            android:theme="@android:style/Theme.Material.Light.NoActionBar" />
+    </application>
+
+</manifest>
