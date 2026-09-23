@@ -2,7 +2,6 @@ package com.revjet.sdk.sample
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.net.Uri
@@ -72,7 +71,7 @@ class ViewsActivity :
             .Builder(this)
             .setTitle("Open URL?")
             .setMessage(url.toString())
-            .setPositiveButton("Open") { _, _ -> startActivity(Intent(Intent.ACTION_VIEW, url)) }
+            .setPositiveButton("Open") { _, _ -> openOrExplain(this, url) }
             .setNegativeButton("Cancel", null)
             .show()
     }

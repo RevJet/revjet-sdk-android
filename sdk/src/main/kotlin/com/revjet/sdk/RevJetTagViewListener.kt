@@ -13,7 +13,8 @@ public interface RevJetTagViewListener {
     /**
      * The ad was clicked, and the destination has been resolved.
      *
-     * Opening it is the application's decision.
+     * Opening it is the application's decision. It may lie outside the web — the Play Store, a deep
+     * link, `tel:` — where no app on the device may handle it.
      */
     public fun onClick(
         view: RevJetTagView,

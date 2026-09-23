@@ -206,8 +206,9 @@ internal class NativeTag(
 
         scope.launch {
             tracking.pixels.forEach { pixel ->
-                Http.fire(pixel.withParameters(parameters))
-                logDebug { "Pixel request was sent: ${event.value}, parameters: $parameters" }
+                if (Http.fire(pixel.withParameters(parameters))) {
+                    logDebug { "Pixel request was sent: ${event.value}, parameters: $parameters" }
+                }
             }
         }
 

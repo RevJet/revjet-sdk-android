@@ -135,7 +135,12 @@ public class Tag
         /** Called once the ad has loaded. */
         public var onLoad: (() -> Unit)? = null
 
-        /** Called with the destination of a click, after the ad server has resolved it. */
+        /**
+         * Called with the destination of a click, after the ad server has resolved it.
+         *
+         * It may lie outside the web — the Play Store, a deep link, `tel:` — where no app on the
+         * device may handle it.
+         */
         public var onClick: ((Uri) -> Unit)? = null
 
         /** Called when a tracking event is reported. */

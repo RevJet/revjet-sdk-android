@@ -36,8 +36,9 @@ import com.revjet.sdk.compose.RevJetTag  // Compose
 - **Viewability**: exposure measured from what the user can actually see, with friendly
   obstructions for app chrome that overlays ads on purpose.
 - **Privacy**: COPPA mode, and the advertising identifier only when the device allows it.
-- **Security**: the bridge only accepts the ad document's main frame, and creatives cannot reach
-  private or loopback addresses, navigate the ad document away, or open arbitrary destinations.
+- **Security**: the bridge only accepts the ad document's main frame; neither creatives nor tracking
+  pixels can reach private or loopback addresses; and creatives cannot navigate the ad document
+  away.
 
 ## Installation
 
@@ -104,6 +105,9 @@ The SDK's manifest declares what it needs, so nothing has to be added to the app
 - `com.google.android.gms.permission.AD_ID` — reading the advertising identifier. Remove it with a
   `tools:node="remove"` override if the application must not request it; the SDK then reports no
   identifier and limited ad tracking.
+
+It also declares `<queries>` for `tel:` and `sms:`, so that MRAID can tell a creative whether the
+device can make a call or send a text. It needs no permission.
 
 ## Products
 
@@ -218,6 +222,27 @@ Methods:
 > Native ads do not navigate on their own. Call one of the `goToLP` methods from your own tap
 > handling, then open the URL reported to `onClick`. Where a click goes is the application's
 > decision; the SDK resolves the destination and hands it over.
+
+### Click destinations
+
+The SDK follows a click's redirects itself, so that it only ever requests publicly routable
+addresses. The destination it reports to `onClick` is usually a web page, but can be anywhere the
+ad server sends the user outside the web — the Play Store (`market://`), another app through a deep
+link, `tel:`, `sms:` or `mailto:`. Those are handed over as they are, without being requested.
+
+Nothing on the device may handle such a URL, so open it expecting that:
+
+```kotlin
+try {
+    startActivity(Intent(Intent.ACTION_VIEW, url))
+} catch (error: ActivityNotFoundException) {
+    // no app can open it
+}
+```
+
+URLs that are never a place a click leads are refused with `BlockedDestination`: `javascript:`,
+`file:`, `content:`, `data:`, `blob:`, `about:`, and `intent:`, which `ACTION_VIEW` cannot open and
+which, parsed into an `Intent`, would let an ad start the application's private components.
 
 ### `Option`
 
@@ -362,7 +387,7 @@ exception — a network or parsing failure — for anything else.
 | --- | --- |
 | `InvalidConfiguration` | The tag or key is blank, or a custom domain is not a host name. |
 | `WebViewUnsupported` | The device's WebView cannot host a web-based tag safely. |
-| `BlockedDestination` | A click, or a hop of its redirects, leads to an address that is not publicly routable. |
+| `BlockedDestination` | A click, or a hop of its redirects, leads to an address that is not publicly routable, or to a URL that is not a destination at all, such as `javascript:`. |
 | `NoRedirectURL` | The redirects of a click could not be followed. |
 | `InvalidLPFormat` | A native ad's landing page is not a valid URL. |
 | `NoClickURL` | The ad reported a click without a destination. |
@@ -402,7 +427,11 @@ class AdActivity : Activity(), RevJetTagViewListener {
     }
 
     override fun onClick(view: RevJetTagView, url: Uri, tag: Tag) {
-        startActivity(Intent(Intent.ACTION_VIEW, url))
+        try {
+            startActivity(Intent(Intent.ACTION_VIEW, url))
+        } catch (error: ActivityNotFoundException) {
+            // a destination outside the web that no app on the device handles
+        }
     }
 
     override fun onNativeResponse(view: RevJetTagView, response: NativeTagResponse, tag: Tag): View? =
@@ -434,7 +463,7 @@ fun AdScreen() {
 
     RevJetTag(
         tag = tag,
-        onClick = { url -> context.startActivity(Intent(Intent.ACTION_VIEW, url)) },
+        onClick = { url -> runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, url)) } },
         modifier = Modifier.fillMaxWidth().height(400.dp),
     )
 }

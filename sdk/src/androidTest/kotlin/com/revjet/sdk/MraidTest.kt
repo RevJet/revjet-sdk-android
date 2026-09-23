@@ -167,6 +167,13 @@ class MraidTest {
     }
 
     @Test
+    fun calls_and_texts_are_supported_where_the_device_can_make_them() {
+        // Package visibility hides the dialer and messaging apps unless the SDK declares its queries
+        assertEquals("tel", "true", host.evaluate("window.mraid.supports('tel')"))
+        assertEquals("sms", "true", host.evaluate("window.mraid.supports('sms')"))
+    }
+
+    @Test
     fun unsupported_methods_report_an_error_instead_of_being_absent() {
         val unsupported =
             listOf(

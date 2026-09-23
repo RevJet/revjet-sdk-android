@@ -1,6 +1,8 @@
 package com.revjet.sdk.internal
 
+import com.revjet.sdk.RevJetError
 import com.revjet.sdk.logDebug
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.HttpURLConnection
@@ -23,23 +25,26 @@ internal object Http {
         }
 
     /**
-     * Sends a GET and discards the response.
+     * Sends a GET and discards the response, for a tracking pixel.
      *
-     * Used for tracking pixels, where the SDK reports the attempt and never the outcome.
+     * A pixel's URL, and wherever it redirects, are chosen by the ad's campaign, so they are held to
+     * the same destinations as a click. The SDK reports the attempt and never the outcome.
+     *
+     * @return whether the pixel was sent, rather than refused.
      */
-    suspend fun fire(url: String) {
-        withContext(Dispatchers.IO) {
-            runCatching {
-                val connection = open(url)
-
-                try {
-                    connection.responseCode
-                } finally {
-                    connection.disconnect()
-                }
-            }.onFailure { logDebug { "Pixel request failed: $url (${it.message})" } }
+    suspend fun fire(url: String): Boolean =
+        try {
+            RedirectResolver.resolve(url)
+            true
+        } catch (error: CancellationException) {
+            throw error
+        } catch (error: RevJetError.BlockedDestination) {
+            logDebug { "Refusing a pixel request to ${error.url}" }
+            false
+        } catch (error: Exception) {
+            logDebug { "Pixel request failed: $url (${error.message})" }
+            true
         }
-    }
 
     fun open(url: String): HttpURLConnection =
         (URL(url).openConnection() as HttpURLConnection).apply {

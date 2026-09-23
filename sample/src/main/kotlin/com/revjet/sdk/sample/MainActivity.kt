@@ -140,7 +140,7 @@ private fun SampleScreen() {
             confirmButton = {
                 TextButton(
                     onClick = {
-                        context.startActivity(Intent(Intent.ACTION_VIEW, url))
+                        openOrExplain(context, url)
                         clickedUrl = null
                     },
                 ) { Text("Open") }
